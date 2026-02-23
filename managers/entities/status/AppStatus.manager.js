@@ -4,10 +4,10 @@ module.exports = class AppStatus {
         this.config              = config;
         this.cortex              = cortex;
         this.managers            = managers;
-        this.httpExposed         = ['get=appStatus'];
+        this.httpExposed         = ['get=health'];
     }
 
-    async appStatus({ res }){
+    async health({ res }){
         this.managers.responseDispatcher.dispatch(res, {
             ok: true,
             message: 'App is running smoothly. All systems operational.',
