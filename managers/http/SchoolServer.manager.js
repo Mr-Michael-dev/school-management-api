@@ -3,6 +3,8 @@ const express           = require('express');
 const cors              = require('cors');
 const helmet            = require('helmet');
 const rateLimit         = require('express-rate-limit');
+const swaggerUi         = require('swagger-ui-express');
+const swaggerSpec       = require('../../config/swagger');
 const app               = express();
 
 /** General API rate limiter: 100 requests per 15 minutes */
@@ -36,6 +38,12 @@ module.exports = class SchoolServer {
 
     /** server configs */
     run(){
+        app.use('/api-docs', (_req, res, next) => {
+            // Set strict Content Security Policy for Swagger UI
+            res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;");
+            next();
+        }, swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
         app.use(helmet());
         app.use(cors({origin: '*'}));
         app.use(express.json());
