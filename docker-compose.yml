@@ -1,21 +1,48 @@
 services:
-  app:
-    build: .
+
+  # ---- Development (hot-reload, bind-mount, nodemon) ----
+  app-dev:
+    profiles: [dev]
+    build:
+      context: .
+      target: development
     container_name: school_management_api
     restart: unless-stopped
     ports:
       - "${USER_PORT:-3000}:${USER_PORT:-3000}"
     env_file:
-      - .env                          # loads all secrets + base config from .env
+      - .env
     environment:
-      # Override localhost URLs with Docker service names
       MONGO_URI: mongodb://mongo:27017/school_management
       CACHE_REDIS: redis://redis:6379
       CORTEX_REDIS: redis://redis:6379
       ENV: development
     volumes:
-      - .:/app                        # mount source for nodemon hot-reload
-      - /app/node_modules             # preserve container's node_modules
+      - .:/app                  # bind-mount for hot-reload
+      - /app/node_modules       # preserve container's node_modules
+    depends_on:
+      - mongo
+      - redis
+    networks:
+      - app_network
+
+  # ---- Production (node, no bind-mount, no devDependencies) ----
+  app-prod:
+    profiles: [prod]
+    build:
+      context: .
+      target: production
+    container_name: school_management_api
+    restart: unless-stopped
+    ports:
+      - "${USER_PORT:-3000}:${USER_PORT:-3000}"
+    env_file:
+      - .env
+    environment:
+      MONGO_URI: mongodb://mongo:27017/school_management
+      CACHE_REDIS: redis://redis:6379
+      CORTEX_REDIS: redis://redis:6379
+      ENV: production
     depends_on:
       - mongo
       - redis
