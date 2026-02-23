@@ -1,7 +1,9 @@
 const MiddlewaresLoader     = require('./MiddlewaresLoader');
+const MongoLoader            = require('./MongoLoader');
 const ApiHandler            = require("../managers/api/Api.manager");
 const LiveDB                = require('../managers/live_db/LiveDb.manager');
-const UserServer            = require('../managers/http/UserServer.manager');
+const SchoolServer            = require('../managers/http/SchoolServer.manager');
+const AppStatus              = require('../managers/entities/status/AppStatus.manager');
 const ResponseDispatcher    = require('../managers/response_dispatcher/ResponseDispatcher.manager');
 const VirtualStack          = require('../managers/virtual_stack/VirtualStack.manager');
 const ValidatorsLoader      = require('./ValidatorsLoader');
@@ -35,7 +37,7 @@ module.exports = class ManagersLoader {
             aeon,
             managers: this.managers, 
             validators: this.validators,
-            // mongomodels: this.mongomodels,
+            mongomodels: this.mongomodels,
             resourceNodes: this.resourceNodes,
         };
         
@@ -47,11 +49,11 @@ module.exports = class ManagersLoader {
             customValidators: require('../managers/_common/schema.validators'),
         });
         const resourceMeshLoader  = new ResourceMeshLoader({})
-        // const mongoLoader      = new MongoLoader({ schemaExtension: "mongoModel.js" });
+        const mongoLoader      = new MongoLoader({ schemaExtension: "mongoModel.js" });
 
         this.validators           = validatorsLoader.load();
         this.resourceNodes        = resourceMeshLoader.load();
-        // this.mongomodels          = mongoLoader.load();
+        this.mongomodels          = mongoLoader.load();
 
     }
 
@@ -66,10 +68,11 @@ module.exports = class ManagersLoader {
         this.managers.shark               = new SharkFin({ ...this.injectable, layers, actions });
         this.managers.timeMachine         = new TimeMachine(this.injectable);
         this.managers.token               = new TokenManager(this.injectable);
+        this.managers.status              = new AppStatus(this.injectable);
         /*************************************************************************************************/
         this.managers.mwsExec             = new VirtualStack({ ...{ preStack: [/* '__token', */'__device',] }, ...this.injectable });
-        this.managers.userApi             = new ApiHandler({...this.injectable,...{prop:'httpExposed'}});
-        this.managers.userServer          = new UserServer({ config: this.config, managers: this.managers });
+        this.managers.schoolApi             = new ApiHandler({...this.injectable,...{prop:'httpExposed'}});
+        this.managers.schoolServer          = new SchoolServer({ config: this.config, managers: this.managers });
 
        
         return this.managers;
