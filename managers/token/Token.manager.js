@@ -7,8 +7,8 @@ module.exports = class TokenManager {
 
     constructor({config}){
         this.config              = config;
-        this.longTokenExpiresIn  = '3y';
-        this.shortTokenExpiresIn = '1y';
+        this.longTokenExpiresIn  = '1day';
+        this.shortTokenExpiresIn = '1hr';
 
         this.httpExposed         = ['v1_createShortToken'];
     }
@@ -25,13 +25,11 @@ module.exports = class TokenManager {
      * long token contains immutable data and long lived
      * master key must exists on any device to create short tokens
      */
-    genLongToken({userId, userKey}){
+    genLongToken({userId, userKey, role, school}){
+        // role and school is added to validate user access level and on protected routes.
         return jwt.sign(
-            { 
-                userKey, 
-                userId,
-            }, 
-            this.config.dotEnv.LONG_TOKEN_SECRET, 
+            { userId, userKey, role, school },
+            this.config.dotEnv.LONG_TOKEN_SECRET,
             {expiresIn: this.longTokenExpiresIn
         })
     }

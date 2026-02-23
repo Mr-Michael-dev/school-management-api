@@ -1,21 +1,26 @@
-module.exports = ({ meta, config, managers }) =>{
-    return ({req, res, next})=>{
-        if(!req.headers.token){
-            console.log('token required but not found')
-            return managers.responseDispatcher.dispatch(res, {ok: false, code:401, errors: 'unauthorized'});
+// I modified this mildeware to extract and verify JWT from Bearer token in Authorization header.
+// Verifies long tokens (login tokens) and injects decoded user data into next middleware.
+module.exports = ({ meta, config, managers }) => {
+    return ({ req, res, next }) => {
+        const authHeader = req.headers.authorization;
+        const token = authHeader && authHeader.startsWith('Bearer ')
+            ? authHeader.split(' ')[1]
+            : null;
+
+        if (!token) {
+            return managers.responseDispatcher.dispatch(res, {
+                ok: false, code: 401, errors: 'unauthorized'
+            });
         }
-        let decoded = null
-        try {
-            decoded = managers.token.verifyShortToken({token: req.headers.token});
-            if(!decoded){
-                console.log('failed to decode-1')
-                return managers.responseDispatcher.dispatch(res, {ok: false, code:401, errors: 'unauthorized'});
-            };
-        } catch(err){
-            console.log('failed to decode-2')
-            return managers.responseDispatcher.dispatch(res, {ok: false, code:401, errors: 'unauthorized'});
+
+        const decoded = managers.token.verifyLongToken({ token });
+        if (!decoded) {
+            return managers.responseDispatcher.dispatch(res, {
+                ok: false, code: 401, errors: 'unauthorized'
+            });
         }
-    
+
+        // decoded contains: { userId, userKey, role, school }
         next(decoded);
-    }
-}
+    };
+};
