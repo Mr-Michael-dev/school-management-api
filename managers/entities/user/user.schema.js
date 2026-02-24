@@ -22,5 +22,13 @@ module.exports = {
     deleteUser: [
         { model: 'id', required: true },
     ],
+    updatePassword: [
+        { model: 'password', path: 'currentPassword', required: true },
+        { model: 'password', path: 'newPassword',     required: true },
+    ],
+    resetPassword: [
+        { model: 'id',                                required: true },
+        { model: 'password', path: 'newPassword',     required: true },
+    ],
     // getUsers has no body params — no validator entry needed
 };

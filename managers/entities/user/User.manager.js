@@ -40,6 +40,8 @@ module.exports = class User {
             'get=getUsers',
             'get=getUser',
             'put=updateUser',
+            'put=updatePassword',
+            'put=resetPassword',
             'delete=deleteUser',
         ];
     }
@@ -268,7 +270,10 @@ module.exports = class User {
      * @swagger
      * /api/user/updateUser:
      *   put:
-     *     summary: Update a user account (superadmin only)
+     *     summary: Update a user account
+     *     description: |
+     *       **Superadmin**: can update any user — username, email, role, school.
+     *       **School admin**: can only update their own username (id must match own account; email, role, school are blocked).
      *     tags: [User]
      *     requestBody:
      *       required: true
@@ -286,12 +291,14 @@ module.exports = class User {
      *                 type: string
      *               email:
      *                 type: string
+     *                 description: Superadmin only
      *               role:
      *                 type: string
      *                 enum: [superadmin, school_admin]
+     *                 description: Superadmin only
      *               school:
      *                 type: string
-     *                 description: School ObjectId (pass null to unassign)
+     *                 description: School ObjectId — superadmin only (pass null to unassign)
      *     responses:
      *       200:
      *         description: User updated
@@ -310,26 +317,147 @@ module.exports = class User {
      *       401:
      *         description: Unauthorized
      *       403:
-     *         description: Forbidden — superadmin role required
+     *         description: Forbidden — school_admin trying to update another user or restricted field
      *       404:
      *         description: User not found
      */
-    async updateUser({ __token, __superadmin, id, username, email, role, school }) {
+    async updateUser({ __token, id, username, email, role, school }) {
         const result = await this.validators.user.updateUser({ id, username, email, role });
         if (result) return result;
+
+        if (__token.role === 'school_admin') {
+            if (id !== __token.userId.toString()) {
+                return { error: 'Access denied: you can only update your own profile' };
+            }
+            if (email !== undefined || role !== undefined || school !== undefined) {
+                return { error: 'Access denied: school_admin cannot update email, role, or school' };
+            }
+        }
 
         const user = await this.mongomodels.User.findById(id);
         if (!user) return { error: 'User not found' };
 
         if (username)             user.username = username;
-        if (email)                user.email    = email;
-        if (role)                 user.role     = role;
-        if (school !== undefined) user.school   = school || null;
+
+        if (__token.role === 'superadmin') {
+            if (email)                user.email  = email;
+            if (role)                 user.role   = role;
+            if (school !== undefined) user.school = school || null;
+        }
 
         await user.save();
         const userObj = user.toObject();
         delete userObj.password;
         return { user: userObj };
+    }
+
+    /**
+     * @swagger
+     * /api/user/updatePassword:
+     *   put:
+     *     summary: Update own password (any authenticated user)
+     *     tags: [User]
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required: [currentPassword, newPassword]
+     *             properties:
+     *               currentPassword:
+     *                 type: string
+     *                 description: Current password for verification
+     *               newPassword:
+     *                 type: string
+     *                 description: New password (min 8 characters)
+     *     responses:
+     *       200:
+     *         description: Password updated successfully
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 ok:      { type: boolean, example: true }
+     *                 data:
+     *                   type: object
+     *                   properties:
+     *                     message: { type: string, example: Password updated successfully }
+     *       400:
+     *         description: Validation error or incorrect current password
+     *       401:
+     *         description: Unauthorized
+     */
+    async updatePassword({ __token, currentPassword, newPassword }) {
+        const result = await this.validators.user.updatePassword({ currentPassword, newPassword });
+        if (result) return result;
+
+        const user = await this.mongomodels.User.findById(__token.userId);
+        if (!user) return { error: 'User not found' };
+
+        const match = await user.comparePassword(currentPassword);
+        if (!match) return { error: 'Current password is incorrect' };
+
+        user.password = newPassword;
+        await user.save(); // pre-save hook re-hashes automatically
+        return { message: 'Password updated successfully' };
+    }
+
+    /**
+     * @swagger
+     * /api/user/resetPassword:
+     *   put:
+     *     summary: Reset any user's password (superadmin only)
+     *     description: Used when a user forgets their password. No current password required.
+     *     tags: [User]
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required: [id, newPassword]
+     *             properties:
+     *               id:
+     *                 type: string
+     *                 description: Target user ObjectId
+     *                 example: 64f1a2b3c4d5e6f7a8b9c0d1
+     *               newPassword:
+     *                 type: string
+     *                 description: New password to set (min 8 characters)
+     *     responses:
+     *       200:
+     *         description: Password reset successfully
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 ok:      { type: boolean, example: true }
+     *                 data:
+     *                   type: object
+     *                   properties:
+     *                     message: { type: string, example: Password reset successfully }
+     *       400:
+     *         description: Validation error
+     *       401:
+     *         description: Unauthorized
+     *       403:
+     *         description: Forbidden — superadmin role required
+     *       404:
+     *         description: User not found
+     */
+    async resetPassword({ __token, __superadmin, id, newPassword }) {
+        const result = await this.validators.user.resetPassword({ id, newPassword });
+        if (result) return result;
+
+        const user = await this.mongomodels.User.findById(id);
+        if (!user) return { error: 'User not found' };
+
+        user.password = newPassword;
+        await user.save(); // pre-save hook re-hashes automatically
+        return { message: 'Password reset successfully' };
     }
 
     /**
