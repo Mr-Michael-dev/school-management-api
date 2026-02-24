@@ -17,6 +17,7 @@ const TimeMachine           = require('../managers/time_machine/TimeMachine.mana
 const User                  = require('../managers/entities/user/User.manager');
 const School                = require('../managers/entities/school/School.manager');
 const Classroom             = require('../managers/entities/classroom/Classroom.manager');
+const Student               = require('../managers/entities/student/Student.manager');
 
 /** 
  * load sharable modules
@@ -75,6 +76,7 @@ module.exports = class ManagersLoader {
         this.managers.user                = new User(this.injectable);
         this.managers.school              = new School(this.injectable);
         this.managers.classroom           = new Classroom(this.injectable);
+        this.managers.student             = new Student(this.injectable);
         /*************************************************************************************************/
         this.managers.mwsExec             = new VirtualStack({ ...{ preStack: [/* '__token', */'__device',] }, ...this.injectable });
         this.managers.schoolApi             = new ApiHandler({...this.injectable,...{prop:'httpExposed'}});
