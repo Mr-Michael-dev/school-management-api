@@ -63,7 +63,10 @@ module.exports = class SchoolServer {
         /** an error handler */
         app.use((err, _req, res, _next) => {
             console.error(err.stack);
-            res.status(500).send('Something broke!');
+            if (err.type === 'entity.parse.failed') {
+                return res.status(400).json({ ok: false, data: {}, errors: [], message: 'Invalid JSON in request body' });
+            }
+            res.status(500).json({ ok: false, data: {}, errors: [], message: 'Internal server error' });
         });
 
         let server = http.createServer(app);
