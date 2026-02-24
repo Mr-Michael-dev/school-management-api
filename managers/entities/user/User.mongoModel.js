@@ -14,10 +14,9 @@ const userSchema = new mongoose.Schema({
 
 // Auto-hash password before insert or save — fires on .create() and .save()
 // Does NOT fire on findOneAndUpdate(); hash manually if updating password that way
-userSchema.pre('save', async function (next) {
-    if (!this.isModified('password')) return next();
+userSchema.pre('save', async function () {
+    if (!this.isModified('password')) return;
     this.password = await bcrypt.hash(this.password, SALT_ROUNDS);
-    next();
 });
 
 // Usage in manager: const match = await user.comparePassword(plaintext)
