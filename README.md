@@ -1,5 +1,9 @@
 # School Management System API
 
+![CI](https://github.com/Mr-Michael-dev/school-management-api/actions/workflows/ci.yml/badge.svg)
+
+**Live API:** [https://school-manager-api.michaeloyedepo.dev/api-docs/](https://school-manager-api.michaeloyedepo.dev/api-docs/)
+
 A RESTful API for managing schools, classrooms, and students, built on the [Axion](https://github.com/qantra-io/axion) microservice template. The system implements role-based access control (RBAC) with JWT authentication, allowing superadmins to manage schools and school administrators to manage classrooms and students within their assigned institutions.
 
 ---
@@ -75,8 +79,6 @@ This project is built on the **Axion** template, a microservice-oriented Node.js
 
 **Auto-Discovery** — Mongoose models (`*.mongoModel.js`), validation schemas (`*.schema.js`), and middleware files (`*.mw.js`) are automatically discovered and loaded at boot time via glob patterns.
 
-For a deeper technical reference on the architecture, see [CLAUDE.md](./CLAUDE.md).
-
 ---
 
 ## Getting Started
@@ -92,7 +94,7 @@ For a deeper technical reference on the architecture, see [CLAUDE.md](./CLAUDE.m
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/school-management-api.git
+git clone https://github.com/Mr-Michael-dev/school-management-api.git
 cd school-management-api
 
 # Install dependencies
@@ -452,8 +454,8 @@ Role enforcement happens at the middleware level. The `__superadmin` and `__scho
 ### Entity Relationship Diagram
 
 ![ERD](doc/ERD-for-school-management-api.png)
-```
 
+```
 ### Cascade Rules
 
 | Event | Action |
@@ -464,6 +466,7 @@ Role enforcement happens at the middleware level. The `__superadmin` and `__scho
 | Remove admin from school | Removed from `School.admins[]`; user account is kept |
 | Transfer Student | Updates `Student.classroom` only — school stays the same |
 
+```
 ---
 
 ## Project Structure
@@ -730,7 +733,7 @@ docker exec school_management_api sh -c "SEED_PASSWORD=yourpassword node scripts
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/add-grading-system`)
-3. Follow the existing architectural patterns (see [CLAUDE.md](./CLAUDE.md) for details)
+3. Follow the existing architectural patterns
 4. Write tests for new functionality
 5. Commit your changes (`git commit -m 'feat: add grading system'`)
 6. Push to the branch (`git push origin feature/add-grading-system`)
