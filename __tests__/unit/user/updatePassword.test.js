@@ -30,7 +30,7 @@ describe('UserManager.updatePassword', () => {
             currentPassword: 'old', newPassword: 'new',
         });
 
-        expect(result).toEqual({ error: 'User not found' });
+        expect(result).toEqual({ error: 'User not found', code: 404 });
     });
 
     it('returns error when current password is incorrect', async () => {

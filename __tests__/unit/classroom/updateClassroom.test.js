@@ -39,7 +39,7 @@ describe('ClassroomManager.updateClassroom', () => {
             id: 'nonexistent-id',
         });
 
-        expect(result).toEqual({ error: 'Classroom not found' });
+        expect(result).toEqual({ error: 'Classroom not found', code: 404 });
     });
 
     it('returns error when classroom belongs to a different school', async () => {

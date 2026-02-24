@@ -84,7 +84,7 @@ describe('UserManager.updateUser', () => {
             id:      'nonexistent-id',
         });
 
-        expect(result).toEqual({ error: 'User not found' });
+        expect(result).toEqual({ error: 'User not found', code: 404 });
     });
 
     it('superadmin can update username, email, role, and school', async () => {

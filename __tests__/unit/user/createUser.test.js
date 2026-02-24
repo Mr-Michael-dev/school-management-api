@@ -50,7 +50,7 @@ describe('UserManager.createUser', () => {
             role: 'school_admin', school: 'nonexistent-school-id',
         });
 
-        expect(result).toEqual({ error: 'School not found' });
+        expect(result).toEqual({ error: 'School not found', code: 404 });
     });
 
     it('creates a school_admin user and strips password from response', async () => {

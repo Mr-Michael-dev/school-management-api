@@ -28,7 +28,7 @@ describe('StudentManager.getStudent', () => {
 
         const result = await manager.getStudent({ __token: {}, id: 'nonexistent-id' });
 
-        expect(result).toEqual({ error: 'Student not found' });
+        expect(result).toEqual({ error: 'Student not found', code: 404 });
     });
 
     it('returns student with school and classroom populated', async () => {

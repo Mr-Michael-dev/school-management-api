@@ -40,7 +40,7 @@ describe('StudentManager.enrollStudent', () => {
             firstName: 'John', lastName: 'Doe', classroomId: 'nonexistent-classroom',
         });
 
-        expect(result).toEqual({ error: 'Classroom not found' });
+        expect(result).toEqual({ error: 'Classroom not found', code: 404 });
         expect(mongomodels.Student.create).not.toHaveBeenCalled();
     });
 

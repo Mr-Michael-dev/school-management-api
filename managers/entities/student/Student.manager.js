@@ -115,7 +115,7 @@ module.exports = class Student {
         if (!school) return { error: 'Admin is not assigned to any school' };
 
         const classroom = await this.mongomodels.Classroom.findById(classroomId);
-        if (!classroom) return { error: 'Classroom not found' };
+        if (!classroom) return { error: 'Classroom not found', code: 404 };
         if (classroom.school.toString() !== school.toString()) {
             return { error: 'Classroom does not belong to your school' };
         }
@@ -180,7 +180,7 @@ module.exports = class Student {
         const student = await this.mongomodels.Student.findById(id)
             .populate('school',    'name')
             .populate('classroom', 'name');
-        if (!student) return { error: 'Student not found' };
+        if (!student) return { error: 'Student not found', code: 404 };
         return { student };
     }
 
@@ -281,7 +281,7 @@ module.exports = class Student {
         if (result) return result;
 
         const student = await this.mongomodels.Student.findById(id);
-        if (!student) return { error: 'Student not found' };
+        if (!student) return { error: 'Student not found', code: 404 };
 
         if (student.school.toString() !== __token.school.toString()) {
             return { error: 'Access denied: student belongs to a different school' };
@@ -350,14 +350,14 @@ module.exports = class Student {
         if (result) return result;
 
         const student = await this.mongomodels.Student.findById(id);
-        if (!student) return { error: 'Student not found' };
+        if (!student) return { error: 'Student not found', code: 404 };
 
         if (student.school.toString() !== __token.school.toString()) {
             return { error: 'Access denied: student belongs to a different school' };
         }
 
         const classroom = await this.mongomodels.Classroom.findById(classroomId);
-        if (!classroom) return { error: 'Target classroom not found' };
+        if (!classroom) return { error: 'Target classroom not found', code: 404 };
 
         if (classroom.school.toString() !== student.school.toString()) {
             return { error: 'Target classroom belongs to a different school' };
@@ -409,7 +409,7 @@ module.exports = class Student {
         if (result) return result;
 
         const student = await this.mongomodels.Student.findById(id);
-        if (!student) return { error: 'Student not found' };
+        if (!student) return { error: 'Student not found', code: 404 };
 
         if (student.school.toString() !== __token.school.toString()) {
             return { error: 'Access denied: student belongs to a different school' };

@@ -174,7 +174,7 @@ module.exports = class User {
         if (role === 'school_admin') {
             if (!school) return { error: 'school id is required for school_admin role' };
             const schoolExists = await this.mongomodels.School.findById(school);
-            if (!schoolExists) return { error: 'School not found' };
+            if (!schoolExists) return { error: 'School not found', code: 404 };
         }
 
         const user = await this.mongomodels.User.create({
@@ -262,7 +262,7 @@ module.exports = class User {
         if (result) return result;
 
         const user = await this.mongomodels.User.findById(id, '-password').populate('school', 'name');
-        if (!user) return { error: 'User not found' };
+        if (!user) return { error: 'User not found', code: 404 };
         return { user };
     }
 
@@ -335,7 +335,7 @@ module.exports = class User {
         }
 
         const user = await this.mongomodels.User.findById(id);
-        if (!user) return { error: 'User not found' };
+        if (!user) return { error: 'User not found', code: 404 };
 
         if (username)             user.username = username;
 
@@ -394,7 +394,7 @@ module.exports = class User {
         if (result) return result;
 
         const user = await this.mongomodels.User.findById(__token.userId);
-        if (!user) return { error: 'User not found' };
+        if (!user) return { error: 'User not found', code: 404 };
 
         const match = await user.comparePassword(currentPassword);
         if (!match) return { error: 'Current password is incorrect' };
@@ -453,7 +453,7 @@ module.exports = class User {
         if (result) return result;
 
         const user = await this.mongomodels.User.findById(id);
-        if (!user) return { error: 'User not found' };
+        if (!user) return { error: 'User not found', code: 404 };
 
         user.password = newPassword;
         await user.save(); // pre-save hook re-hashes automatically
@@ -501,7 +501,7 @@ module.exports = class User {
         if (result) return result;
 
         const user = await this.mongomodels.User.findById(id);
-        if (!user) return { error: 'User not found' };
+        if (!user) return { error: 'User not found', code: 404 };
 
         // Clean up school assignment if school_admin
         if (user.role === 'school_admin' && user.school) {

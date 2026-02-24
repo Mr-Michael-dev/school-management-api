@@ -30,7 +30,7 @@ describe('UserManager.resetPassword', () => {
             id: 'nonexistent-id', newPassword: 'newpass123',
         });
 
-        expect(result).toEqual({ error: 'User not found' });
+        expect(result).toEqual({ error: 'User not found', code: 404 });
     });
 
     it('resets password without requiring the current password', async () => {

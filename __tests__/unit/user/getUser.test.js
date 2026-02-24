@@ -26,7 +26,7 @@ describe('UserManager.getUser', () => {
 
         const result = await manager.getUser({ id: 'nonexistent-id' });
 
-        expect(result).toEqual({ error: 'User not found' });
+        expect(result).toEqual({ error: 'User not found', code: 404 });
     });
 
     it('returns user with school populated and password excluded', async () => {

@@ -24,7 +24,7 @@ describe('SchoolManager.deleteSchool', () => {
 
         const result = await manager.deleteSchool({ __token: {}, __superadmin: true, id: 'nonexistent-id' });
 
-        expect(result).toEqual({ error: 'School not found' });
+        expect(result).toEqual({ error: 'School not found', code: 404 });
         expect(mongomodels.School.findByIdAndDelete).not.toHaveBeenCalled();
     });
 

@@ -30,7 +30,7 @@ describe('StudentManager.transferStudent', () => {
             id: 'nonexistent-id', classroomId: 'classroom-id-456',
         });
 
-        expect(result).toEqual({ error: 'Student not found' });
+        expect(result).toEqual({ error: 'Student not found', code: 404 });
         expect(mongomodels.Classroom.findById).not.toHaveBeenCalled();
     });
 
@@ -56,7 +56,7 @@ describe('StudentManager.transferStudent', () => {
             id: 'student-id-123', classroomId: 'nonexistent-classroom',
         });
 
-        expect(result).toEqual({ error: 'Target classroom not found' });
+        expect(result).toEqual({ error: 'Target classroom not found', code: 404 });
     });
 
     it('returns error when target classroom belongs to a different school', async () => {

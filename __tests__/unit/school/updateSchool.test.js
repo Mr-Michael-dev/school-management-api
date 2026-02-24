@@ -24,7 +24,7 @@ describe('SchoolManager.updateSchool', () => {
 
         const result = await manager.updateSchool({ __token: {}, __superadmin: true, id: 'nonexistent-id' });
 
-        expect(result).toEqual({ error: 'School not found' });
+        expect(result).toEqual({ error: 'School not found', code: 404 });
     });
 
     it('updates name when provided', async () => {

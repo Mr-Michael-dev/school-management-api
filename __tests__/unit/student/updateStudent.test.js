@@ -28,7 +28,7 @@ describe('StudentManager.updateStudent', () => {
             __token: { school: 'school-id-123' }, __schoolAdmin: true, id: 'nonexistent-id',
         });
 
-        expect(result).toEqual({ error: 'Student not found' });
+        expect(result).toEqual({ error: 'Student not found', code: 404 });
     });
 
     it('returns error when student belongs to a different school', async () => {

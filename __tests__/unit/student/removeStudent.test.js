@@ -28,7 +28,7 @@ describe('StudentManager.removeStudent', () => {
             __token: { school: 'school-id-123' }, __schoolAdmin: true, id: 'nonexistent-id',
         });
 
-        expect(result).toEqual({ error: 'Student not found' });
+        expect(result).toEqual({ error: 'Student not found', code: 404 });
         expect(mongomodels.Student.findByIdAndDelete).not.toHaveBeenCalled();
     });
 

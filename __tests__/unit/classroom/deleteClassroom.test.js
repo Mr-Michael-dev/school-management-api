@@ -28,7 +28,7 @@ describe('ClassroomManager.deleteClassroom', () => {
             __token: { school: 'school-id-123' }, __schoolAdmin: true, id: 'nonexistent-id',
         });
 
-        expect(result).toEqual({ error: 'Classroom not found' });
+        expect(result).toEqual({ error: 'Classroom not found', code: 404 });
         expect(mongomodels.Classroom.findByIdAndDelete).not.toHaveBeenCalled();
     });
 

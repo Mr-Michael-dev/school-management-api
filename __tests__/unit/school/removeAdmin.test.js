@@ -27,7 +27,7 @@ describe('SchoolManager.removeAdmin', () => {
             schoolId: 'nonexistent-school', userId: 'user-id-123',
         });
 
-        expect(result).toEqual({ error: 'School not found' });
+        expect(result).toEqual({ error: 'School not found', code: 404 });
     });
 
     it('returns error when user is not assigned to this school', async () => {

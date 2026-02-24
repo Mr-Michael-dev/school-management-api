@@ -149,7 +149,7 @@ module.exports = class Classroom {
         if (result) return result;
 
         const classroom = await this.mongomodels.Classroom.findById(id).populate('school', 'name address');
-        if (!classroom) return { error: 'Classroom not found' };
+        if (!classroom) return { error: 'Classroom not found', code: 404 };
         return { classroom };
     }
 
@@ -243,7 +243,7 @@ module.exports = class Classroom {
         }
 
         const classroom = await this.mongomodels.Classroom.findById(id);
-        if (!classroom) return { error: 'Classroom not found' };
+        if (!classroom) return { error: 'Classroom not found', code: 404 };
 
         if (classroom.school.toString() !== __token.school.toString()) {
             return { error: 'Access denied: classroom belongs to a different school' };
@@ -299,7 +299,7 @@ module.exports = class Classroom {
         if (result) return result;
 
         const classroom = await this.mongomodels.Classroom.findById(id);
-        if (!classroom) return { error: 'Classroom not found' };
+        if (!classroom) return { error: 'Classroom not found', code: 404 };
 
         if (classroom.school.toString() !== __token.school.toString()) {
             return { error: 'Access denied: classroom belongs to a different school' };

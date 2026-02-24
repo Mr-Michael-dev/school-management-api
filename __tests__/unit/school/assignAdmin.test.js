@@ -27,7 +27,7 @@ describe('SchoolManager.assignAdmin', () => {
             schoolId: 'nonexistent-school', userId: 'user-id-123',
         });
 
-        expect(result).toEqual({ error: 'School not found' });
+        expect(result).toEqual({ error: 'School not found', code: 404 });
         expect(mongomodels.User.findById).not.toHaveBeenCalled();
     });
 
@@ -40,7 +40,7 @@ describe('SchoolManager.assignAdmin', () => {
             schoolId: 'school-id-123', userId: 'nonexistent-user',
         });
 
-        expect(result).toEqual({ error: 'User not found' });
+        expect(result).toEqual({ error: 'User not found', code: 404 });
     });
 
     it('returns error when user does not have school_admin role', async () => {

@@ -130,7 +130,7 @@ module.exports = class School {
         if (result) return result;
 
         const school = await this.mongomodels.School.findById(id).populate('admins', 'username email role');
-        if (!school) return { error: 'School not found' };
+        if (!school) return { error: 'School not found', code: 404 };
         return { school };
     }
 
@@ -213,7 +213,7 @@ module.exports = class School {
         if (result) return result;
 
         const school = await this.mongomodels.School.findById(id);
-        if (!school) return { error: 'School not found' };
+        if (!school) return { error: 'School not found', code: 404 };
 
         if (name)    school.name    = name;
         if (address) school.address = address;
@@ -264,7 +264,7 @@ module.exports = class School {
         if (result) return result;
 
         const school = await this.mongomodels.School.findById(id);
-        if (!school) return { error: 'School not found' };
+        if (!school) return { error: 'School not found', code: 404 };
 
         // Cascade: remove all students and classrooms in this school
         await this.mongomodels.Student.deleteMany({ school: id });
@@ -324,10 +324,10 @@ module.exports = class School {
         if (result) return result;
 
         const school = await this.mongomodels.School.findById(schoolId);
-        if (!school) return { error: 'School not found' };
+        if (!school) return { error: 'School not found', code: 404 };
 
         const user = await this.mongomodels.User.findById(userId);
-        if (!user) return { error: 'User not found' };
+        if (!user) return { error: 'User not found', code: 404 };
 
         if (user.role !== 'school_admin') return { error: 'User must have school_admin role' };
 
@@ -388,7 +388,7 @@ module.exports = class School {
         if (result) return result;
 
         const school = await this.mongomodels.School.findById(schoolId);
-        if (!school) return { error: 'School not found' };
+        if (!school) return { error: 'School not found', code: 404 };
 
         const isAssigned = school.admins.some(a => a.toString() === userId);
         if (!isAssigned) return { error: 'User is not assigned to this school' };

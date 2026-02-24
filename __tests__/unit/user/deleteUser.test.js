@@ -26,7 +26,7 @@ describe('UserManager.deleteUser', () => {
             __token: {}, __superadmin: true, id: 'nonexistent-id',
         });
 
-        expect(result).toEqual({ error: 'User not found' });
+        expect(result).toEqual({ error: 'User not found', code: 404 });
         expect(mongomodels.User.findByIdAndDelete).not.toHaveBeenCalled();
     });
 
